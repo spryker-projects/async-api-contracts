@@ -1,7 +1,7 @@
 {
     "name": "spryker-projects/async-api-contracts",
     "description": "Central place for all in ACP registered AsyncAPIs.",
-    "type": "metapackage",
+    "type": "library",
     "authors": [
         {
             "name": "René Klatt",
