@@ -1,0 +1,211 @@
+asyncapi: 2.6.0
+info:
+  title: 'Bazaarvoice AsyncAPI definition.'
+  version: 0.1.0
+channels:
+  asset-commands:
+    subscribe:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/AssetAdded'
+          - $ref: '#/components/messages/AssetUpdated'
+          - $ref: '#/components/messages/AssetDeleted'
+  product-review-commands:
+    subscribe:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/AddReviews'
+
+  order-events:
+    publish:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/OrderStatusChanged'
+
+components:
+  messages:
+    AssetAdded:
+      name: AssetAdded
+      x-spryker:
+        module: BazaarVoiceConfig
+      payload:
+        $ref: '#/components/schemas/GenericAssetPayload'
+      headers:
+        $ref: '#/components/schemas/message-broker/components/schemas/headers'
+    AssetUpdated:
+      name: AssetUpdated
+      x-spryker:
+        module: BazaarVoiceConfig
+      payload:
+        $ref: '#/components/schemas/GenericAssetPayload'
+      headers:
+        $ref: '#/components/schemas/message-broker/components/schemas/headers'
+    AssetDeleted:
+      name: AssetDeleted
+      x-spryker:
+        module: BazaarVoiceConfig
+      payload:
+        $ref: '#/components/schemas/GenericAssetPayload'
+      headers:
+        $ref: '#/components/schemas/message-broker/components/schemas/headers'
+
+    AddReviews:
+      name: AddReviews
+      description: Command message will be send when an external system reports reviews.
+      x-spryker:
+        module: BazaarVoice
+      payload:
+        $ref: '#/components/schemas/AddReviews'
+      headers:
+        $ref: '#/components/schemas/message-broker/components/schemas/headers'
+
+    OrderStatusChanged:
+      name: OrderStatusChanged
+      x-spryker:
+        module: BazaarVoice
+      summary: 'Order status has changed.'
+      payload:
+        $ref: '#/components/schemas/OrderStatusChanged'
+      headers:
+        $ref: '#/components/schemas/message-broker/components/schemas/headers'
+
+  schemas:
+    GenericAssetPayload:
+      type: object
+      properties:
+        assetIdentifier:
+          type: string
+        assetName:
+          type: string
+        assetView:
+          type: string
+        slotKey:
+          type: string
+      required:
+        - assetIdentifier
+        - assetName
+        - assetView
+        - slotKey
+
+    AddReviews:
+      type: object
+      properties:
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+      required:
+        - reviews
+
+    Review:
+      type: object
+      properties:
+        productIdentifier:
+          type: string
+          example: 5da02a51-c9b3-48f4-b804-fab27b5f2239
+        customerIdentifier:
+          type: string
+          example: 42b3b25b-93e9-41c2-a236-81891e8bb8df
+        nickname:
+          type: string
+          example: 'Stereomon'
+        locale:
+          type: string
+          example: en_US
+        reviewTitle:
+          type: string
+          example: 'Spryker is the best!'
+        reviewText:
+          type: string
+          example: 'I can highly recommend to use Spryker, they are doing the best and offer really nice apps which are very easy to integrate.'
+        rating:
+          type: integer
+          example: 5
+        status:
+          description: When this is not sent the review will be created in pending state
+          type: integer
+          enum: ['pending', 'approved', 'rejected']
+      required:
+        - productIdentifier
+        - customerIdentifier
+        - locale
+        - rating
+
+    OrderStatusChanged:
+      type: object
+      properties:
+        transactionDate:
+          type: string
+          example: '2019-09-21T11:36:47'
+        emailAddress:
+          type: string
+          example: 'example@email.com'
+        localeName:
+          type: string
+          example: en_US
+        userName:
+          type: string
+          example: 'Customer Username'
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        status:
+          type: string
+          example: 'shipped'
+        orderReference:
+          type: string
+          example: 'DE--123456'
+        merchants:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderMerchant'
+      required:
+        - transactionDate
+        - emailAddress
+        - localeName
+        - userName
+        - orderItems
+        - status
+        - orderReference
+
+    OrderItem:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: 'some_sku'
+        name:
+          type: string
+          example: 'Product Name'
+        imageUrl:
+          type: string
+          nullable: true
+          example: 'https://product-image-url.com'
+        price:
+          type: integer
+          example: 999, in cents.
+      required:
+        - productId
+        - name
+        - price
+
+    OrderMerchant:
+      type: object
+      properties:
+        merchantReference:
+          type: string
+          example: 'MER000001'
+        name:
+          type: string
+          example: 'Merchant Name'
+        imageUrl:
+          type: string
+          nullable: true
+          example: 'https://merchant-image-url.com'
+      required:
+        - merchantReference
+        - name
+
+    message-broker:
+      $ref: 'https://raw.githubusercontent.com/spryker/message-broker/1.6.0/resources/api/template.yml'
