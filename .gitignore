@@ -16,7 +16,3 @@ nbproject/
 vendor/*
 composer.lock
 .phpunit.result.cache
-
-# tests
-tests/_output
-tests/_support/_generated/
