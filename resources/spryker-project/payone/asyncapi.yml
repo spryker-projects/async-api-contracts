@@ -1,59 +1,179 @@
 asyncapi: 2.6.0
 info:
-  title: 'Usercentrics AsyncAPI definition.'
-  version: 0.1.0
+    title: Payone
+    version: 0.1.0
 channels:
-  asset-commands:
-    subscribe:
-      message:
-        oneOf:
-          - $ref: '#/components/messages/AssetAdded'
-          - $ref: '#/components/messages/AssetUpdated'
-          - $ref: '#/components/messages/AssetDeleted'
+    payment-events:
+        subscribe:
+            message:
+                oneOf:
+                    - $ref: '#/components/messages/PaymentPreauthorized'
+                    - $ref: '#/components/messages/PaymentConfirmed'
+                    - $ref: '#/components/messages/PaymentConfirmationFailed'
+                    - $ref: '#/components/messages/PaymentRefunded'
+                    - $ref: '#/components/messages/PaymentRefundFailed'
+                    - $ref: '#/components/messages/PaymentReservationCanceled'
+
+    payment-commands:
+        publish:
+            message:
+                oneOf:
+                    - $ref: '#/components/messages/PaymentCancelReservationRequested'
+                    - $ref: '#/components/messages/PaymentConfirmationRequested'
+                    - $ref: '#/components/messages/PaymentRefundRequested'
+
+    payment-method-commands:
+        publish:
+            message:
+                oneOf:
+                    - $ref: '#/components/messages/PaymentMethodAdded'
+                    - $ref: '#/components/messages/PaymentMethodDeleted'
 components:
-  messages:
-    AssetAdded:
-      name: AssetAdded
-      x-spryker:
-        module: Usercentrics
-      payload:
-        $ref: '#/components/schemas/GenericAssetPayload'
-      headers:
-        $ref: '#/components/schemas/message-broker/components/schemas/headers'
-    AssetUpdated:
-      name: AssetUpdated
-      x-spryker:
-        module: Usercentrics
-      payload:
-        $ref: '#/components/schemas/GenericAssetPayload'
-      headers:
-        $ref: '#/components/schemas/message-broker/components/schemas/headers'
-    AssetDeleted:
-      name: AssetDeleted
-      x-spryker:
-        module: Usercentrics
-      payload:
-        $ref: '#/components/schemas/GenericAssetPayload'
-      headers:
-        $ref: '#/components/schemas/message-broker/components/schemas/headers'
+    messages:
+        PaymentMethodAdded:
+            name: PaymentMethodAdded
+            x-spryker:
+                module: PayoneConfig
+            summary: 'Adds new payment method for tenant.'
+            payload:
+                $ref: '#/components/schemas/GenericPaymentMethodPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentMethodDeleted:
+            name: PaymentMethodDeleted
+            x-spryker:
+                module: PayoneConfig
+            summary: 'Deletes existing payment method for tenant.'
+            payload:
+                $ref: '#/components/schemas/GenericPaymentMethodPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentPreauthorized:
+            name: PaymentPreauthorized
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentStatusPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentConfirmed:
+            name: PaymentConfirmed
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentStatusPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentConfirmationFailed:
+            name: PaymentConfirmationFailed
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentStatusPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentRefunded:
+            name: PaymentRefunded
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentStatusPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentRefundFailed:
+            name: PaymentRefundFailed
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentStatusPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentReservationCanceled:
+            name: PaymentReservationCanceled
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentStatusPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentCancelReservationRequested:
+            name: PaymentCancelReservationRequested
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentConfirmationRequested:
+            name: PaymentConfirmationRequested
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+        PaymentRefundRequested:
+            name: PaymentRefundRequested
+            x-spryker:
+                module: Payone
+            payload:
+                $ref: '#/components/schemas/GenericPaymentPayload'
+            headers:
+                $ref: '#/components/schemas/message-broker/components/schemas/headers'
+    schemas:
+        GenericPaymentStatusPayload:
+            type: object
+            properties:
+                orderReference:
+                    type: string
+                orderItemIds:
+                    type: array
+            required:
+                - orderReference
+                - orderItemIds
 
-  schemas:
-    GenericAssetPayload:
-      type: object
-      properties:
-        assetIdentifier:
-          type: string
-        assetName:
-          type: string
-        assetView:
-          type: string
-        slotKey:
-          type: string
-      required:
-        - assetIdentifier
-        - assetName
-        - assetView
-        - slotKey
+        GenericPaymentMethodPayload:
+            type: object
+            properties:
+                name:
+                    type: string
+                providerName:
+                    type: string
+                paymentAuthorizationEndpoint:
+                    type: string
+            required:
+                - name
+                - providerName
+                - paymentAuthorizationEndpoint
 
-    message-broker:
-      $ref: 'https://raw.githubusercontent.com/spryker/message-broker/1.6.0/resources/api/template.yml'
+        GenericPaymentPayload:
+            type: object
+            properties:
+                orderReference:
+                    type: string
+                orderItemIds:
+                    type: array
+                amount:
+                    type: integer
+                currencyIsoCode:
+                    type: string
+                idPaymentPayoneOrderCancel:
+                    type: integer
+                idPaymentPayoneOrderCapture:
+                    type: integer
+                idPaymentPayoneOrderRefund:
+                    type: integer
+                attemptNumber:
+                    type: integer
+            required:
+                - orderReference
+                - orderItemIds
+                - amount
+                - currencyIsoCode
+                - idPaymentPayoneOrderCancel
+                - idPaymentPayoneOrderCapture
+                - idPaymentPayoneOrderRefund
+                - attemptNumber
+
+        message-broker:
+            $ref: 'https://raw.githubusercontent.com/spryker/message-broker/1.6.0/resources/api/template.yml'
