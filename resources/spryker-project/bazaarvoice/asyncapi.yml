@@ -15,7 +15,6 @@ channels:
       message:
         oneOf:
           - $ref: '#/components/messages/AddReviews'
-
   order-events:
     publish:
       message:
