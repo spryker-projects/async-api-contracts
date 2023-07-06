@@ -4,7 +4,7 @@ info:
   version: 0.1.0
 channels:
   search-commands:
-    subscribe:
+    publish:
       message:
         oneOf:
           - $ref: '#/components/messages/SearchEndpointAvailable'
